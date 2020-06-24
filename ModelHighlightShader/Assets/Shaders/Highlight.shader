@@ -20,27 +20,21 @@
         #pragma target 3.0
         
 
-        struct v2f
-        {
-            float4 pos      : POSITIOM;
-            float4 color    : COLOR;
-            float4 normal   : NORMAL; 
-        };
-
-
         sampler2D _MainTex;
 
         struct Input
         {
             float2 uv_MainTex;
-        };
+			float3 worldPos;
+		};
 
         half _Glossiness;
         half _Metallic;
         fixed4 _Color;
 
+		float3 _TargetPos;
+		float _Radius;
 
-    
 
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
         // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -51,43 +45,24 @@
 
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
-            // Albedo comes from a texture tinted by color
-            fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
+			float4 targetPos = mul(unity_ObjectToWorld, float4(_TargetPos, 1.0f));
+			float4 c = _Color;
+			if (distance(targetPos.xyz, IN.worldPos) < _Radius)
+			{
+				c.r = 1; c.g = 0; c.b = 0;
+			}
 
-            o.Albedo = c.rgb;
+            // Albedo comes from a texture tinted by color
+            fixed4 col = tex2D (_MainTex, IN.uv_MainTex) * c;
+
+            o.Albedo = col.rgb;
             // Metallic and smoothness come from slider variables
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
-            o.Alpha = 0;
+            o.Alpha = 1;
         }
 
-        float3 _TargetPos;
-        float _Radius;
-
-        void vert (Input IN, inout appdata_full v) {
-          // v.vertex.xyz += v.normal;
-          fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
-          c.r = 1; c.g = 1; c.b = 0;
-          v.color = c;
-        }
-
-        v2f VS_MAIN(appdata_full v)
-        {
-            v2f output = (v2f)0;
-
-            float4 c = _Color;
-
-            float4 targetPos = mul(unity_ObjectToWorld, float4(_TargetPos, 1.0f));
-
-            if (distance(targetPos, v.vertex) < _Radius)
-            {
-                c.r = 1; c.g = 0; c.b = 0;
-            }
-
-            output.color = c;
-            return output;
-        }
-
+            
         ENDCG
     }
     FallBack "Diffuse"

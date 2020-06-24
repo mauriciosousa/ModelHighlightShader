@@ -20,7 +20,7 @@ public class HighlightColor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _meshRenderer.material.SetVector("_TargetPosition", transform.position);
+        _meshRenderer.material.SetVector("_TargetPos", target.transform.position);
         _meshRenderer.material.SetFloat("_Radius", radius);
     }
 }
