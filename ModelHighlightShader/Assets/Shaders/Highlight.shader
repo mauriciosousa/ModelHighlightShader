@@ -18,6 +18,7 @@
 
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
+        
 
         struct v2f
         {
@@ -38,8 +39,7 @@
         half _Metallic;
         fixed4 _Color;
 
-        float3 _TargetPos;
-        float _Radius;
+
     
 
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
@@ -53,11 +53,22 @@
         {
             // Albedo comes from a texture tinted by color
             fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
+
             o.Albedo = c.rgb;
             // Metallic and smoothness come from slider variables
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
             o.Alpha = 0;
+        }
+
+        float3 _TargetPos;
+        float _Radius;
+
+        void vert (Input IN, inout appdata_full v) {
+          // v.vertex.xyz += v.normal;
+          fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
+          c.r = 1; c.g = 1; c.b = 0;
+          v.color = c;
         }
 
         v2f VS_MAIN(appdata_full v)
