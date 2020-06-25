@@ -5,7 +5,7 @@ using UnityEngine;
 public class HighlightColor : MonoBehaviour
 {
     public Transform target;
-    public float radius = 1f;
+    public float radius = 0.5f;
 
     private MeshRenderer _meshRenderer;
     private Material _material;
@@ -15,6 +15,7 @@ public class HighlightColor : MonoBehaviour
         _meshRenderer = GetComponent<MeshRenderer>();
         _material = Resources.Load("Materials/Highlight") as Material;
         _meshRenderer.material = _material;
+
     }
 
     // Update is called once per frame
